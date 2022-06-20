@@ -11,7 +11,7 @@ public class DirectoryEntity
     public long? ParentId { get; set; }
     public DirectoryEntity? Parent { get; set; }
 
-    public ICollection<DirectoryEntity> Children { get; set; } = new List<DirectoryEntity>();
-    public ICollection<FileEntity> Files { get; set; } = new List<FileEntity>();
-    public ICollection<DirectoryAccess> Accesses { get; set; } = new List<DirectoryAccess>();
+    public ICollection<DirectoryEntity> Children { get; } = new List<DirectoryEntity>();
+    public ICollection<FileEntity> Files { get; } = new List<FileEntity>();
+    public ICollection<DirectoryAccess> Accesses { get; } = new List<DirectoryAccess>();
 }
