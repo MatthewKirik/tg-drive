@@ -36,4 +36,5 @@ public class TgDriveContext : DbContext
     public DbSet<FileEntity> Files { get; set; }
     public DbSet<DirectoryEntity> Directories { get; set; }
     public DbSet<DirectoryAccess> DirectoriesAccesses { get; set; }
+    public DbSet<UserInfoEntity> Users { get; set; }
 }
