@@ -1,7 +1,6 @@
-﻿using TgGateway.Abstractions;
-using TgGateway.Models;
+﻿using TgGateway.Models;
 
-namespace TgGateway;
+namespace TgGateway.Abstractions;
 
 public interface IBotClient
 {
