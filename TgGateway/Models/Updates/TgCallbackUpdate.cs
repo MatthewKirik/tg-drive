@@ -1,8 +1,10 @@
 ﻿namespace TgGateway.Models.Updates;
 
-public record TgCallbackUpdate : TgUpdate
-{
-    public string MenuId { get; init; }
-    public string ButtonId { get; init; }
-    public IEnumerable<string> Arguments { get; init; }
-}
+public record TgCallbackUpdate(
+        string MenuId,
+        string ButtonId,
+        IEnumerable<string> Arguments,
+        long SenderId,
+        long ChatId,
+        DateTime DateTime)
+    : TgUpdate(SenderId, ChatId, DateTime);

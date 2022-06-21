@@ -1,6 +1,8 @@
 ﻿namespace TgGateway.Models.Updates;
 
-public record TgMessageUpdate : TgUpdate
-{
-    public TgMessage Message { get; init; }
-}
+public record TgMessageUpdate(
+        TgMessage Message,
+        long SenderId,
+        long ChatId,
+        DateTime DateTime)
+    : TgUpdate(SenderId, ChatId, DateTime);
