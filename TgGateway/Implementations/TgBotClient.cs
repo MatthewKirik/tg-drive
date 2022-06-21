@@ -185,7 +185,7 @@ public class TgBotClient : IBotClient
 
     private async Task TryClearChatExceptMenu(long chatId)
     {
-        var msgsToDelete = await _storage.GetMessages(_unimportantPurposes);
+        var msgsToDelete = await _storage.GetMessages(chatId, _unimportantPurposes);
         foreach (var msg in msgsToDelete)
             try
             {
@@ -197,6 +197,8 @@ public class TgBotClient : IBotClient
             {
                 // ignored as the feature is unstable and not very important
             }
+
+        await _storage.DeleteMessages(chatId, msgsToDelete.Select(x => x.MessageId));
     }
 
     public async Task<long> SendText(long chatId, string text, long? replyToMsgId = null)
