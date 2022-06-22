@@ -47,7 +47,7 @@ public class DirectoryRepository : IDirectoryRepository
         var rootMembers = await _db.Directories
             .Where(d => d.ParentId == null)
             .ToListAsync();
-        return _mapper.Map<List<DirectoryDto>>(rootMembers);
+        return _mapper.Map<IEnumerable<DirectoryDto>>(rootMembers);
     }
 
     public async Task<DirectoryDto> RenameDirectory(long directoryId, string newName)
@@ -55,9 +55,7 @@ public class DirectoryRepository : IDirectoryRepository
         var directory =
             await _db.Directories.FirstOrDefaultAsync(d => d.Id == directoryId);
         if (directory == null)
-        {
             throw new TgDirectoryNotFoundException(directoryId);
-        }
 
         directory.Name = newName;
         await _db.SaveChangesAsync();
@@ -69,9 +67,7 @@ public class DirectoryRepository : IDirectoryRepository
         var directory =
             await _db.Directories.FirstOrDefaultAsync(d => d.Id == directoryId);
         if (directory == null)
-        {
             throw new TgDirectoryNotFoundException(directoryId);
-        }
 
         _db.Remove(directory);
         await _db.SaveChangesAsync();
@@ -87,9 +83,7 @@ public class DirectoryRepository : IDirectoryRepository
         var directory =
             await _db.Directories.FirstOrDefaultAsync(d => d.Id == directoryId);
         if (directory == null)
-        {
             throw new TgDirectoryNotFoundException(directoryId);
-        }
 
         var access = await _db.DirectoriesAccesses.FirstOrDefaultAsync(da =>
             da.DirectoryId == directoryId && da.UserId == userId);
@@ -122,9 +116,7 @@ public class DirectoryRepository : IDirectoryRepository
         var directory =
             await _db.Directories.FirstOrDefaultAsync(d => d.Id == directoryId);
         if (directory == null)
-        {
             throw new TgDirectoryNotFoundException(directoryId);
-        }
 
         var access = await _db.DirectoriesAccesses.FirstOrDefaultAsync(da =>
             da.DirectoryId == directoryId && da.UserId == userId);
@@ -136,9 +128,7 @@ public class DirectoryRepository : IDirectoryRepository
         var directory =
             await _db.Directories.FirstOrDefaultAsync(d => d.Id == directoryId);
         if (directory == null)
-        {
             throw new TgDirectoryNotFoundException(directoryId);
-        }
 
         var access = await _db.DirectoriesAccesses.FirstOrDefaultAsync(da =>
             da.DirectoryId == directoryId && da.UserId == userId);
