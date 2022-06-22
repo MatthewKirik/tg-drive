@@ -10,10 +10,10 @@ public class TgDriveContext : DbContext
     {
     }
 
-    public DbSet<FileEntity> Files { get; set; }
-    public DbSet<DirectoryEntity> Directories { get; set; }
-    public DbSet<DirectoryAccess> DirectoriesAccesses { get; set; }
-    public DbSet<UserInfoEntity> Users { get; set; }
+    public DbSet<FileEntity> Files => Set<FileEntity>();
+    public DbSet<DirectoryEntity> Directories => Set<DirectoryEntity>();
+    public DbSet<DirectoryAccess> DirectoriesAccesses => Set<DirectoryAccess>();
+    public DbSet<UserInfoEntity> Users => Set<UserInfoEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

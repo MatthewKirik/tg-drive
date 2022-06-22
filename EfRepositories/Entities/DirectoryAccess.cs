@@ -2,6 +2,11 @@
 
 public class DirectoryAccess
 {
+    public DirectoryAccess()
+    {
+        Directory = default!;
+    }
+
     public long UserId { get; set; }
     public long DirectoryId { get; set; }
     public DirectoryEntity Directory { get; set; }

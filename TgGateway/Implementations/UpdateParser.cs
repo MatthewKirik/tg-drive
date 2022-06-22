@@ -13,13 +13,17 @@ public class UpdateParser : IUpdateHandler
     private readonly IMessageStorage _storage;
     private readonly Abstractions.IUpdateHandler _updateHandler;
 
-    public UpdateParser(IMessageStorage storage, Abstractions.IUpdateHandler updateHandler)
+    public UpdateParser(
+        IMessageStorage storage,
+        Abstractions.IUpdateHandler updateHandler)
     {
         _storage = storage;
         _updateHandler = updateHandler;
     }
 
-    public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
+    public async Task HandleUpdateAsync(
+        ITelegramBotClient botClient,
+        Update update,
         CancellationToken cancellationToken)
     {
         switch (update.Type)
@@ -35,7 +39,9 @@ public class UpdateParser : IUpdateHandler
         }
     }
 
-    public async Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception,
+    public async Task HandlePollingErrorAsync(
+        ITelegramBotClient botClient,
+        Exception exception,
         CancellationToken cancellationToken)
     {
         await ProcessError(exception);
@@ -60,7 +66,8 @@ public class UpdateParser : IUpdateHandler
         {
             menuId = parts[0];
             btnId = parts[1];
-            args = parts.Skip(2).ToList();
+            args = parts.Skip(2)
+                .ToList();
         }
         catch (Exception)
         {
@@ -96,7 +103,8 @@ public class UpdateParser : IUpdateHandler
         ));
         if (msg.Text!.StartsWith("/"))
         {
-            var command = new string(msg.Text.Skip(1).ToArray());
+            var command = new string(msg.Text.Skip(1)
+                .ToArray());
             if (command == string.Empty)
             {
                 return;

@@ -50,7 +50,9 @@ public class LiteDbMessageStorage : IMessageStorage
         });
     }
 
-    public async Task<IEnumerable<TgMessage>> GetMessages(long chatId, IEnumerable<TgMessagePurpose> filter)
+    public async Task<IEnumerable<TgMessage>> GetMessages(
+        long chatId,
+        IEnumerable<TgMessagePurpose> filter)
     {
         IEnumerable<TgMessage> messages = new List<TgMessage>();
         await Task.Run(() =>

@@ -86,7 +86,9 @@ public class TgBotClient : IBotClient
 
     public async Task<long> SendText(long chatId, string text, long? replyToMsgId = null)
     {
-        var message = await _tgBotClient.SendTextMessageAsync(new ChatId(chatId), text, ParseMode.Html);
+        var message =
+            await _tgBotClient.SendTextMessageAsync(new ChatId(chatId), text,
+                ParseMode.Html);
         await _storage.SaveMessage(new TgMessage
         (
             ChatId: chatId,
@@ -99,7 +101,10 @@ public class TgBotClient : IBotClient
         return message.MessageId;
     }
 
-    public async Task<long> ForwardMessageUnmanaged(long fromChat, long toChat, long messageId)
+    public async Task<long> ForwardMessageUnmanaged(
+        long fromChat,
+        long toChat,
+        long messageId)
     {
         var message = await _tgBotClient.ForwardMessageAsync(
             new ChatId(toChat),
@@ -108,7 +113,9 @@ public class TgBotClient : IBotClient
         return message.MessageId;
     }
 
-    public async IAsyncEnumerable<long> ForwardMessagesUnmanaged(long fromChat, long toChat,
+    public async IAsyncEnumerable<long> ForwardMessagesUnmanaged(
+        long fromChat,
+        long toChat,
         IEnumerable<long> messageIds)
     {
         foreach (var msgId in messageIds)
@@ -121,7 +128,10 @@ public class TgBotClient : IBotClient
         }
     }
 
-    public async Task<long> CopyMessageUnmanaged(long fromChat, long toChat, long messageId)
+    public async Task<long> CopyMessageUnmanaged(
+        long fromChat,
+        long toChat,
+        long messageId)
     {
         var message = await _tgBotClient.CopyMessageAsync(
             new ChatId(toChat),
@@ -130,7 +140,10 @@ public class TgBotClient : IBotClient
         return message.Id;
     }
 
-    public async IAsyncEnumerable<long> CopyMessagesUnmanaged(long fromChat, long toChat, IEnumerable<long> messageIds)
+    public async IAsyncEnumerable<long> CopyMessagesUnmanaged(
+        long fromChat,
+        long toChat,
+        IEnumerable<long> messageIds)
     {
         foreach (var msgId in messageIds)
         {

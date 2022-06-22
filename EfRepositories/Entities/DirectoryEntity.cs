@@ -2,6 +2,11 @@
 
 public class DirectoryEntity
 {
+    public DirectoryEntity()
+    {
+        Name = default!;
+    }
+
     public long Id { get; set; }
     public string Name { get; set; }
     public long OwnerId { get; set; }

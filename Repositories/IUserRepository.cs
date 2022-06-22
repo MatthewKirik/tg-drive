@@ -4,6 +4,6 @@ namespace Repositories;
 
 public interface IUserRepository
 {
-    Task GetUserInfo(long userId);
-    Task SetUserInfo(UserInfoDto userInfo);
+    Task<UserInfoDto?> GetUserInfo(long userId);
+    Task<UserInfoDto> SetUserInfo(UserInfoDto userInfo);
 }

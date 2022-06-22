@@ -4,8 +4,8 @@ namespace DriveServices;
 
 public interface ITgFileService
 {
-    Task<FileDto> AddFile(FileDto file);
-    Task<FileDto> GetFile(long fileId, long destinationChatId);
+    Task<FileDto> AddFile(FileDto file, long destinationChatId);
+    Task<FileDto> SendFile(long fileId, long destinationChatId);
 
     Task<IEnumerable<FileDto>> SendFiles(
         long destinationChatId,
