@@ -11,8 +11,14 @@ namespace TgGateway.Implementations;
 
 public class TgBotClient : IBotClient
 {
-    private readonly ITelegramBotClient _tgBotClient;
     private readonly IMessageStorage _storage;
+    private readonly ITelegramBotClient _tgBotClient;
+
+    private readonly TgMessagePurpose[] _unimportantPurposes =
+    {
+        TgMessagePurpose.Command, TgMessagePurpose.Message, TgMessagePurpose.Unknown
+    };
+
     private UpdateParser? _updateParser;
 
     public TgBotClient(ITelegramBotClient tgBotClient, IMessageStorage storage)
@@ -35,7 +41,6 @@ public class TgBotClient : IBotClient
     }
 
 
-
     public async Task<long> SendMenu(long chatId, MenuData data)
     {
         // delete messages in background as it can take long time
@@ -50,11 +55,18 @@ public class TgBotClient : IBotClient
                 data.Text,
                 data.Keyboard);
             if (!edited)
+            {
                 await TryDeleteMessage(chatId, existingMenuMsg.MessageId);
+            }
+
             needToSendMenu = !edited;
         }
 
-        if (!needToSendMenu) return existingMenuMsg!.MessageId;
+        if (!needToSendMenu)
+        {
+            return existingMenuMsg!.MessageId;
+        }
+
         var sentMenuMsg = await _tgBotClient.SendTextMessageAsync(
             chatId,
             data.Text,
@@ -67,9 +79,67 @@ public class TgBotClient : IBotClient
             MessageId: sentMenuMsg.MessageId,
             Purpose: TgMessagePurpose.Menu,
             SenderId: sentMenuMsg.From!.Id,
-            Type: (TgMessageType) sentMenuMsg.Type
+            Type: (TgMessageType)sentMenuMsg.Type
         ));
         return sentMenuMsg.MessageId;
+    }
+
+    public async Task<long> SendText(long chatId, string text, long? replyToMsgId = null)
+    {
+        var message = await _tgBotClient.SendTextMessageAsync(new ChatId(chatId), text, ParseMode.Html);
+        await _storage.SaveMessage(new TgMessage
+        (
+            ChatId: chatId,
+            DateTime: message.Date,
+            MessageId: message.MessageId,
+            Purpose: TgMessagePurpose.Message,
+            SenderId: message.From!.Id,
+            Type: (TgMessageType)message.Type
+        ));
+        return message.MessageId;
+    }
+
+    public async Task<long> ForwardMessageUnmanaged(long fromChat, long toChat, long messageId)
+    {
+        var message = await _tgBotClient.ForwardMessageAsync(
+            new ChatId(toChat),
+            new ChatId(fromChat),
+            (int)messageId);
+        return message.MessageId;
+    }
+
+    public async IAsyncEnumerable<long> ForwardMessagesUnmanaged(long fromChat, long toChat,
+        IEnumerable<long> messageIds)
+    {
+        foreach (var msgId in messageIds)
+        {
+            var message = await _tgBotClient.ForwardMessageAsync(
+                new ChatId(toChat),
+                new ChatId(fromChat),
+                (int)msgId);
+            yield return message.MessageId;
+        }
+    }
+
+    public async Task<long> CopyMessageUnmanaged(long fromChat, long toChat, long messageId)
+    {
+        var message = await _tgBotClient.CopyMessageAsync(
+            new ChatId(toChat),
+            new ChatId(fromChat),
+            (int)messageId);
+        return message.Id;
+    }
+
+    public async IAsyncEnumerable<long> CopyMessagesUnmanaged(long fromChat, long toChat, IEnumerable<long> messageIds)
+    {
+        foreach (var msgId in messageIds)
+        {
+            var message = await _tgBotClient.CopyMessageAsync(
+                new ChatId(toChat),
+                new ChatId(fromChat),
+                (int)msgId);
+            yield return message.Id;
+        }
     }
 
     private async Task<bool> TryEditMessage(
@@ -82,7 +152,7 @@ public class TgBotClient : IBotClient
         {
             _ = await _tgBotClient.EditMessageTextAsync(
                 new ChatId(chatId),
-                (int) messageId,
+                (int)messageId,
                 newText,
                 ParseMode.Html,
                 replyMarkup: keys);
@@ -100,7 +170,7 @@ public class TgBotClient : IBotClient
         {
             await _tgBotClient.DeleteMessageAsync(
                 new ChatId(chatId),
-                (int) messageId);
+                (int)messageId);
             await _storage.DeleteMessage(chatId, messageId);
         }
         catch (Exception)
@@ -109,87 +179,24 @@ public class TgBotClient : IBotClient
         }
     }
 
-    private readonly TgMessagePurpose[] _unimportantPurposes =
-    {
-        TgMessagePurpose.Command,
-        TgMessagePurpose.Message,
-        TgMessagePurpose.Unknown
-    };
-
 
     private async void TryClearChatExceptMenu(long chatId)
     {
         var msgsToDelete = await _storage.GetMessages(chatId, _unimportantPurposes);
         foreach (var msg in msgsToDelete)
+        {
             try
             {
                 await _tgBotClient.DeleteMessageAsync(
                     new ChatId(chatId),
-                    (int) msg.MessageId);
+                    (int)msg.MessageId);
             }
             catch (Exception)
             {
                 // ignored as the feature is unstable and not very important
             }
+        }
 
         await _storage.DeleteMessages(chatId, msgsToDelete.Select(x => x.MessageId));
-    }
-
-    public async Task<long> SendText(long chatId, string text, long? replyToMsgId = null)
-    {
-        var message = await _tgBotClient.SendTextMessageAsync(new ChatId(chatId), text, ParseMode.Html);
-        await _storage.SaveMessage(new TgMessage
-        (
-            ChatId: chatId,
-            DateTime: message.Date,
-            MessageId: message.MessageId,
-            Purpose: TgMessagePurpose.Message,
-            SenderId: message.From!.Id,
-            Type: (TgMessageType) message.Type
-        ));
-        return message.MessageId;
-    }
-
-    public async Task<long> ForwardMessageUnmanaged(long fromChat, long toChat, long messageId)
-    {
-        var message = await _tgBotClient.ForwardMessageAsync(
-            new ChatId(toChat),
-            new ChatId(fromChat),
-            (int) messageId);
-        return message.MessageId;
-    }
-
-    public async IAsyncEnumerable<long> ForwardMessagesUnmanaged(long fromChat, long toChat,
-        IEnumerable<long> messageIds)
-    {
-        foreach (var msgId in messageIds)
-        {
-            var message = await _tgBotClient.ForwardMessageAsync(
-                new ChatId(toChat),
-                new ChatId(fromChat),
-                (int) msgId);
-            yield return message.MessageId;
-        }
-    }
-
-    public async Task<long> CopyMessageUnmanaged(long fromChat, long toChat, long messageId)
-    {
-        var message = await _tgBotClient.CopyMessageAsync(
-            new ChatId(toChat),
-            new ChatId(fromChat),
-            (int) messageId);
-        return message.Id;
-    }
-
-    public async IAsyncEnumerable<long> CopyMessagesUnmanaged(long fromChat, long toChat, IEnumerable<long> messageIds)
-    {
-        foreach (var msgId in messageIds)
-        {
-            var message = await _tgBotClient.CopyMessageAsync(
-                new ChatId(toChat),
-                new ChatId(fromChat),
-                (int) msgId);
-            yield return message.Id;
-        }
     }
 }

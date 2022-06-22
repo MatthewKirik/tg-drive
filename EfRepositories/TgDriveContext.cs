@@ -10,6 +10,11 @@ public class TgDriveContext : DbContext
     {
     }
 
+    public DbSet<FileEntity> Files { get; set; }
+    public DbSet<DirectoryEntity> Directories { get; set; }
+    public DbSet<DirectoryAccess> DirectoriesAccesses { get; set; }
+    public DbSet<UserInfoEntity> Users { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -32,9 +37,4 @@ public class TgDriveContext : DbContext
             .WithOne(x => x.Directory)
             .HasForeignKey(x => x.DirectoryId);
     }
-
-    public DbSet<FileEntity> Files { get; set; }
-    public DbSet<DirectoryEntity> Directories { get; set; }
-    public DbSet<DirectoryAccess> DirectoriesAccesses { get; set; }
-    public DbSet<UserInfoEntity> Users { get; set; }
 }

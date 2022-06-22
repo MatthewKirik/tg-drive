@@ -48,7 +48,11 @@ public class UpdateParser : IUpdateHandler
 
     private async Task ProcessCallbackQuery(CallbackQuery callback)
     {
-        if (string.IsNullOrEmpty(callback.Data)) return;
+        if (string.IsNullOrEmpty(callback.Data))
+        {
+            return;
+        }
+
         var parts = callback.Data.Split();
         string? menuId, btnId;
         List<string> args;
@@ -76,7 +80,11 @@ public class UpdateParser : IUpdateHandler
 
     private async Task ProcessMessage(Message msg)
     {
-        if (msg.From == null) return;
+        if (msg.From == null)
+        {
+            return;
+        }
+
         await _storage.SaveMessage(new TgMessage
         (
             ChatId: msg.Chat.Id,
@@ -84,13 +92,16 @@ public class UpdateParser : IUpdateHandler
             MessageId: msg.MessageId,
             Purpose: TgMessagePurpose.Message,
             SenderId: msg.From!.Id,
-            Type: (TgMessageType) msg.Type
+            Type: (TgMessageType)msg.Type
         ));
         if (msg.Text!.StartsWith("/"))
         {
             var command = new string(msg.Text.Skip(1).ToArray());
             if (command == string.Empty)
+            {
                 return;
+            }
+
             await _updateHandler.HandleCommand(new TgCommandUpdate
             (
                 ChatId: msg.Chat.Id,
@@ -112,7 +123,7 @@ public class UpdateParser : IUpdateHandler
                     MessageId: msg.MessageId,
                     DateTime: msg.Date,
                     SenderId: msg.From!.Id,
-                    Type: (TgMessageType) msg.Type,
+                    Type: (TgMessageType)msg.Type,
                     Purpose: TgMessagePurpose.Unknown
                 )
             ));

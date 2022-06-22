@@ -7,8 +7,8 @@ namespace TgChatsStorage;
 
 public class LiteDbMessageStorage : IMessageStorage
 {
-    private readonly ILiteDatabase _db;
     private const string ChatsCollectionName = "chats";
+    private readonly ILiteDatabase _db;
 
     public LiteDbMessageStorage(ILiteDatabase db)
     {
@@ -24,8 +24,10 @@ public class LiteDbMessageStorage : IMessageStorage
             var chat = chats
                 .FindOne(x => x.ChatId == chatId);
             if (chat != null)
+            {
                 result = chat.Messages
                     .FirstOrDefault(x => x.Purpose == TgMessagePurpose.Menu);
+            }
         });
         return result;
     }
@@ -57,9 +59,11 @@ public class LiteDbMessageStorage : IMessageStorage
             var chat = chats
                 .FindOne(x => x.ChatId == chatId);
             if (chat != null)
+            {
                 messages = chat.Messages
                     .Where(x => filter.Contains(x.Purpose))
                     .ToList();
+            }
         });
         return messages;
     }
@@ -71,7 +75,11 @@ public class LiteDbMessageStorage : IMessageStorage
             var chats = _db.GetCollection<ChatDocument>(ChatsCollectionName);
             var chat = chats
                 .FindOne(x => x.ChatId == chatId);
-            if (chat == null) return;
+            if (chat == null)
+            {
+                return;
+            }
+
             chat.Messages = chat.Messages
                 .Where(x => !messageIds.Contains(x.MessageId))
                 .ToList();
@@ -86,7 +94,11 @@ public class LiteDbMessageStorage : IMessageStorage
             var chats = _db.GetCollection<ChatDocument>(ChatsCollectionName);
             var chat = chats
                 .FindOne(x => x.ChatId == chatId);
-            if (chat == null) return;
+            if (chat == null)
+            {
+                return;
+            }
+
             chat.Messages = chat.Messages
                 .Where(x => x.MessageId != messageId)
                 .ToList();
