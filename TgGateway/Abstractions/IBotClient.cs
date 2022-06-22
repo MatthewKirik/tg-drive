@@ -8,7 +8,16 @@ public interface IBotClient
     Task<long> SendMenu(long chatId, MenuData data);
     Task<long> SendText(long chatId, string text, long? replyToMsgId = null);
     Task<long> ForwardMessageUnmanaged(long fromChat, long toChat, long messageId);
-    IAsyncEnumerable<long> ForwardMessagesUnmanaged(long fromChat, long toChat, IEnumerable<long> messageIds);
+
+    IAsyncEnumerable<long> ForwardMessagesUnmanaged(
+        long fromChat,
+        long toChat,
+        IEnumerable<long> messageIds);
+
     Task<long> CopyMessageUnmanaged(long fromChat, long toChat, long messageId);
-    IAsyncEnumerable<long> CopyMessagesUnmanaged(long fromChat, long toChat, IEnumerable<long> messageIds);
+
+    IAsyncEnumerable<long> CopyMessagesUnmanaged(
+        long fromChat,
+        long toChat,
+        IEnumerable<long> messageIds);
 }

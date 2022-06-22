@@ -14,7 +14,10 @@ public abstract class MenuBase
         var keys = new List<List<InlineKeyboardButton>>();
         foreach (var btn in buttons)
         {
-            var inlineBtn = new InlineKeyboardButton(btn.text) {CallbackData = $"{menuCallbackId} {btn.callback}"};
+            var inlineBtn = new InlineKeyboardButton(btn.text)
+            {
+                CallbackData = $"{menuCallbackId} {btn.callback}"
+            };
             keys.Add(new List<InlineKeyboardButton> {inlineBtn});
         }
 
