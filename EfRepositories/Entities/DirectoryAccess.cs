@@ -7,4 +7,9 @@ public class DirectoryAccess
     public DirectoryEntity Directory { get; set; }
     public bool HasWriteAccess { get; set; }
     public bool HasReadAccess { get; set; }
+
+    public DirectoryAccess()
+    {
+        Directory = default!;
+    }
 }

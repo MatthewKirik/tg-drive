@@ -14,4 +14,9 @@ public class DirectoryEntity
     public ICollection<DirectoryEntity> Children { get; } = new List<DirectoryEntity>();
     public ICollection<FileEntity> Files { get; } = new List<FileEntity>();
     public ICollection<DirectoryAccess> Accesses { get; } = new List<DirectoryAccess>();
+
+    public DirectoryEntity()
+    {
+        Name = default!;
+    }
 }

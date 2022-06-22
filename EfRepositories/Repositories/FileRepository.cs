@@ -62,7 +62,7 @@ public class FileRepository : IFileRepository
             filesQuery = filesQuery.Take(take.Value);
         }
 
-        var files = filesQuery.ToList();
+        var files = await filesQuery.ToListAsync();
         return _mapper.Map<IEnumerable<FileDto>>(files);
     }
 
@@ -85,7 +85,7 @@ public class FileRepository : IFileRepository
             filesQuery = filesQuery.Take(take.Value);
         }
 
-        var files = filesQuery.ToList();
+        var files = await filesQuery.ToListAsync();
         return _mapper.Map<IEnumerable<FileDto>>(files);
     }
 
@@ -110,7 +110,7 @@ public class FileRepository : IFileRepository
             filesQuery = filesQuery.Take(take.Value);
         }
 
-        var files = filesQuery.ToList();
+        var files = await filesQuery.ToListAsync();
         return _mapper.Map<IEnumerable<FileDto>>(files);
     }
 

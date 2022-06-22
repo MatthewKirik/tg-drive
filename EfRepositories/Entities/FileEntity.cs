@@ -12,4 +12,10 @@ public class FileEntity
 
     public long DirectoryId { get; set; }
     public DirectoryEntity Directory { get; set; }
+
+    public FileEntity()
+    {
+        Directory = default!;
+        Name = default!;
+    }
 }
