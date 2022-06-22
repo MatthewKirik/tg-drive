@@ -5,7 +5,6 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TgGateway.Abstractions;
 using TgGateway.Models;
-using TgGateway.Models.Updates;
 using IUpdateHandler = TgGateway.Abstractions.IUpdateHandler;
 
 namespace TgGateway.Implementations;
@@ -14,7 +13,7 @@ public class TgBotClient : IBotClient
 {
     private readonly ITelegramBotClient _tgBotClient;
     private readonly IMessageStorage _storage;
-    private IUpdateHandler? _updateHandler;
+    private UpdateParser? _updateParser;
 
     public TgBotClient(ITelegramBotClient tgBotClient, IMessageStorage storage)
     {
@@ -24,106 +23,23 @@ public class TgBotClient : IBotClient
 
     public void StartReceiving(IUpdateHandler handler)
     {
-        _updateHandler = handler;
+        _updateParser = new UpdateParser(_storage, handler);
         var cts = new CancellationTokenSource();
         var cancellationToken = cts.Token;
         var receiverOptions = new ReceiverOptions();
         _tgBotClient.StartReceiving(
-            HandleUpdateAsync,
-            HandleErrorAsync,
+            _updateParser,
             receiverOptions,
             cancellationToken
         );
     }
 
-    private async void HandleErrorAsync(ITelegramBotClient client, Exception exception, CancellationToken ct)
-    {
-        await _updateHandler!.HandleError(exception);
-    }
 
-    private async void HandleUpdateAsync(ITelegramBotClient client, Update update, CancellationToken ct)
-    {
-        switch (update.Type)
-        {
-            case UpdateType.Message:
-                await ProcessMessage(update.Message!);
-                break;
-            case UpdateType.CallbackQuery:
-                await ProcessCallbackQuery(update.CallbackQuery!);
-                break;
-            default:
-                return;
-        }
-    }
-
-    private async Task ProcessCallbackQuery(CallbackQuery callback)
-    {
-        if (string.IsNullOrEmpty(callback.Data)) return;
-        var parts = callback.Data.Split();
-        string? menuId, btnId;
-        List<string> args;
-        try
-        {
-            menuId = parts[0];
-            btnId = parts[1];
-            args = parts.Skip(2).ToList();
-        }
-        catch (Exception)
-        {
-            return;
-        }
-
-        await _updateHandler!.HandleCallback(new TgCallbackUpdate
-        (
-            DateTime: DateTime.Now,
-            MenuId: menuId,
-            ButtonId: btnId,
-            Arguments: args,
-            ChatId: callback.Message!.Chat.Id,
-            SenderId: callback.From.Id
-        ));
-    }
-
-    private async Task ProcessMessage(Message msg)
-    {
-        if (msg.From == null) return;
-        if (msg.Text!.StartsWith("/"))
-        {
-            var command = new string(msg.Text.Skip(1).ToArray());
-            if (command == string.Empty)
-                return;
-            await _updateHandler!.HandleCommand(new TgCommandUpdate
-            (
-                ChatId: msg.Chat.Id,
-                DateTime: msg.Date,
-                Command: command,
-                SenderId: msg.From.Id
-            ));
-        }
-        else
-        {
-            await _updateHandler!.HandleMessage(new TgMessageUpdate
-            (
-                ChatId: msg.Chat.Id,
-                SenderId: msg.From.Id,
-                DateTime: msg.Date,
-                Message: new TgMessage
-                (
-                    ChatId: msg.Chat.Id,
-                    MessageId: msg.MessageId,
-                    DateTime: msg.Date,
-                    SenderId: msg.From!.Id,
-                    Type: (TgMessageType) msg.Type,
-                    Purpose: TgMessagePurpose.Unknown
-                )
-            ));
-        }
-    }
 
     public async Task<long> SendMenu(long chatId, MenuData data)
     {
         // delete messages in background as it can take long time
-        _ = TryClearChatExceptMenu(chatId);
+        TryClearChatExceptMenu(chatId);
         var existingMenuMsg = await _storage.GetMenuMessage(chatId);
         var needToSendMenu = true;
         if (existingMenuMsg != null)
@@ -133,6 +49,8 @@ public class TgBotClient : IBotClient
                 existingMenuMsg.MessageId,
                 data.Text,
                 data.Keyboard);
+            if (!edited)
+                await TryDeleteMessage(chatId, existingMenuMsg.MessageId);
             needToSendMenu = !edited;
         }
 
@@ -176,6 +94,21 @@ public class TgBotClient : IBotClient
         }
     }
 
+    private async Task TryDeleteMessage(long chatId, long messageId)
+    {
+        try
+        {
+            await _tgBotClient.DeleteMessageAsync(
+                new ChatId(chatId),
+                (int) messageId);
+            await _storage.DeleteMessage(chatId, messageId);
+        }
+        catch (Exception)
+        {
+            // ignored as the message might not exists
+        }
+    }
+
     private readonly TgMessagePurpose[] _unimportantPurposes =
     {
         TgMessagePurpose.Command,
@@ -183,7 +116,8 @@ public class TgBotClient : IBotClient
         TgMessagePurpose.Unknown
     };
 
-    private async Task TryClearChatExceptMenu(long chatId)
+
+    private async void TryClearChatExceptMenu(long chatId)
     {
         var msgsToDelete = await _storage.GetMessages(chatId, _unimportantPurposes);
         foreach (var msg in msgsToDelete)

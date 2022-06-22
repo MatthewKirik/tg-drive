@@ -8,4 +8,5 @@ public interface IMessageStorage
     Task SaveMessage(TgMessage msg);
     Task<IEnumerable<TgMessage>> GetMessages(long chatId, IEnumerable<TgMessagePurpose> filter);
     Task DeleteMessages(long chatId, IEnumerable<long> messageIds);
+    Task DeleteMessage(long chatId, long messageId);
 }

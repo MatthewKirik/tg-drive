@@ -7,9 +7,9 @@ public abstract class MenuBase
     public abstract bool FitsCallbackId(string callbackData);
     public abstract Task Open();
 
-    protected static InlineKeyboardMarkup CreateKeyboard(
+    public static InlineKeyboardMarkup CreateKeyboard(
         string menuCallbackId,
-        IEnumerable<(string text, string callback)> buttons)
+        params (string text, string callback)[] buttons)
     {
         var keys = new List<List<InlineKeyboardButton>>();
         foreach (var btn in buttons)
