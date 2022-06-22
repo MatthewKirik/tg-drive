@@ -10,7 +10,7 @@ public class LiteDbMessageStorage : IMessageStorage
     private readonly ILiteDatabase _db;
     private const string ChatsCollectionName = "chats";
 
-    public LiteDbMessageStorage(ILiteDatabase db, string dataFolder)
+    public LiteDbMessageStorage(ILiteDatabase db)
     {
         _db = db;
     }
@@ -23,8 +23,9 @@ public class LiteDbMessageStorage : IMessageStorage
             var chats = _db.GetCollection<ChatDocument>(ChatsCollectionName);
             var chat = chats
                 .FindOne(x => x.ChatId == chatId);
-            result = chat.Messages
-                .FirstOrDefault(x => x.Purpose == TgMessagePurpose.Menu);
+            if (chat != null)
+                result = chat.Messages
+                    .FirstOrDefault(x => x.Purpose == TgMessagePurpose.Menu);
         });
         return result;
     }
@@ -36,6 +37,12 @@ public class LiteDbMessageStorage : IMessageStorage
             var chats = _db.GetCollection<ChatDocument>(ChatsCollectionName);
             var chat = chats
                 .FindOne(x => x.ChatId == msg.ChatId);
+            if (chat == null)
+            {
+                chat = new ChatDocument {ChatId = msg.ChatId};
+                chats.Insert(chat);
+            }
+
             chat.Messages.Add(msg);
             chats.Update(chat);
         });
@@ -49,9 +56,10 @@ public class LiteDbMessageStorage : IMessageStorage
             var chats = _db.GetCollection<ChatDocument>(ChatsCollectionName);
             var chat = chats
                 .FindOne(x => x.ChatId == chatId);
-            messages = chat.Messages
-                .Where(x => filter.Contains(x.Purpose))
-                .ToList();
+            if (chat != null)
+                messages = chat.Messages
+                    .Where(x => filter.Contains(x.Purpose))
+                    .ToList();
         });
         return messages;
     }
@@ -63,8 +71,24 @@ public class LiteDbMessageStorage : IMessageStorage
             var chats = _db.GetCollection<ChatDocument>(ChatsCollectionName);
             var chat = chats
                 .FindOne(x => x.ChatId == chatId);
+            if (chat == null) return;
             chat.Messages = chat.Messages
                 .Where(x => !messageIds.Contains(x.MessageId))
+                .ToList();
+            chats.Update(chat);
+        });
+    }
+
+    public async Task DeleteMessage(long chatId, long messageId)
+    {
+        await Task.Run(() =>
+        {
+            var chats = _db.GetCollection<ChatDocument>(ChatsCollectionName);
+            var chat = chats
+                .FindOne(x => x.ChatId == chatId);
+            if (chat == null) return;
+            chat.Messages = chat.Messages
+                .Where(x => x.MessageId != messageId)
                 .ToList();
             chats.Update(chat);
         });
