@@ -8,8 +8,11 @@ public class EntityToDtoMappingProfile : Profile
 {
     public EntityToDtoMappingProfile()
     {
-        CreateMap<DirectoryEntity, DirectoryDto>().ReverseMap();
-        CreateMap<FileEntity, FileDto>().ReverseMap();
-        CreateMap<UserInfoDto, UserInfoDto>().ReverseMap();
+        CreateMap<DirectoryEntity, DirectoryDto>()
+            .ReverseMap();
+        CreateMap<FileEntity, FileDto>()
+            .ReverseMap();
+        CreateMap<UserInfoDto, UserInfoDto>()
+            .ReverseMap();
     }
 }

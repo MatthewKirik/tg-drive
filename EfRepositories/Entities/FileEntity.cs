@@ -2,6 +2,12 @@
 
 public class FileEntity
 {
+    public FileEntity()
+    {
+        Directory = default!;
+        Name = default!;
+    }
+
     public long Id { get; set; }
     public string Name { get; set; }
     public string? Description { get; set; }
@@ -12,10 +18,4 @@ public class FileEntity
 
     public long DirectoryId { get; set; }
     public DirectoryEntity Directory { get; set; }
-
-    public FileEntity()
-    {
-        Directory = default!;
-        Name = default!;
-    }
 }

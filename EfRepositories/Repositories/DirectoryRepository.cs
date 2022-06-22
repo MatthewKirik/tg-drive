@@ -55,7 +55,9 @@ public class DirectoryRepository : IDirectoryRepository
         var directory =
             await _db.Directories.FirstOrDefaultAsync(d => d.Id == directoryId);
         if (directory == null)
+        {
             throw new TgDirectoryNotFoundException(directoryId);
+        }
 
         directory.Name = newName;
         await _db.SaveChangesAsync();
@@ -67,7 +69,9 @@ public class DirectoryRepository : IDirectoryRepository
         var directory =
             await _db.Directories.FirstOrDefaultAsync(d => d.Id == directoryId);
         if (directory == null)
+        {
             throw new TgDirectoryNotFoundException(directoryId);
+        }
 
         _db.Remove(directory);
         await _db.SaveChangesAsync();
@@ -83,7 +87,9 @@ public class DirectoryRepository : IDirectoryRepository
         var directory =
             await _db.Directories.FirstOrDefaultAsync(d => d.Id == directoryId);
         if (directory == null)
+        {
             throw new TgDirectoryNotFoundException(directoryId);
+        }
 
         var access = await _db.DirectoriesAccesses.FirstOrDefaultAsync(da =>
             da.DirectoryId == directoryId && da.UserId == userId);
@@ -116,7 +122,9 @@ public class DirectoryRepository : IDirectoryRepository
         var directory =
             await _db.Directories.FirstOrDefaultAsync(d => d.Id == directoryId);
         if (directory == null)
+        {
             throw new TgDirectoryNotFoundException(directoryId);
+        }
 
         var access = await _db.DirectoriesAccesses.FirstOrDefaultAsync(da =>
             da.DirectoryId == directoryId && da.UserId == userId);
@@ -128,7 +136,9 @@ public class DirectoryRepository : IDirectoryRepository
         var directory =
             await _db.Directories.FirstOrDefaultAsync(d => d.Id == directoryId);
         if (directory == null)
+        {
             throw new TgDirectoryNotFoundException(directoryId);
+        }
 
         var access = await _db.DirectoriesAccesses.FirstOrDefaultAsync(da =>
             da.DirectoryId == directoryId && da.UserId == userId);
