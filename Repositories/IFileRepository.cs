@@ -14,6 +14,6 @@ public interface IFileRepository
     Task<IEnumerable<FileDto>> GetFilesByDescription(string description, long? directoryId = null, int? skip = null,
         int? take = null);
 
-    Task<FileDto> ChangeDescription(long id, string newDescription);
+    Task<FileDto> ChangeDescription(long fileId, string newDescription);
     Task<FileDto> Remove(long fileId);
 }
