@@ -4,5 +4,6 @@ public record TgCommandUpdate(
         string Command,
         long SenderId,
         long ChatId,
-        DateTime DateTime)
-    : TgUpdate(SenderId, ChatId, DateTime);
+        DateTime DateTime,
+        Dictionary<string, string> State)
+    : TgUpdate(SenderId, ChatId, DateTime, State);

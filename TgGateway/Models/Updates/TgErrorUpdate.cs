@@ -4,5 +4,6 @@ public record TgErrorUpdate(
         Exception Error,
         long SenderId,
         long ChatId,
-        DateTime DateTime)
-    : TgUpdate(SenderId, ChatId, DateTime);
+        DateTime DateTime,
+        Dictionary<string, string> state)
+    : TgUpdate(SenderId, ChatId, DateTime, state);
