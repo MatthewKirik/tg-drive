@@ -4,8 +4,8 @@ namespace DriveServices;
 
 public interface IFileService
 {
-    Task<FileDto> ChangeDescription(long id, string newDescription);
-    Task<FileDto> Remove(long fileId, bool hardDelete = false);
+    Task<FileDto> ChangeDescription(long fileId, string newDescription);
+    Task<FileDto> Remove(long fileId);
 
     Task<IEnumerable<FileDto>> GetFiles(
         long? directoryId = null,

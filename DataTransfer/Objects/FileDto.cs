@@ -7,7 +7,7 @@ public class FileDto
     public string? Description { get; set; }
     public long AddedByUserId { get; set; }
     public long MessageId { get; set; }
-    public long ChannelId { get; set; }
+    public long ChatId { get; set; }
     public string? ReadAccessKey { get; set; }
     public long DirectoryId { get; set; }
 }

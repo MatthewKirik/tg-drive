@@ -5,22 +5,22 @@ namespace DriveServices;
 public interface ITgFileService
 {
     Task<FileDto> AddFile(FileDto file, long destinationChatId);
-    Task<FileDto> SendFile(long fileId, long destinationChatId);
+    Task<long> SendFile(long fileId, long destinationChatId);
 
-    Task<IEnumerable<FileDto>> SendFiles(
+    Task<IEnumerable<long>> SendFiles(
         long destinationChatId,
         long? directoryId = null,
         int? skip = null,
         int? take = null);
 
-    Task<IEnumerable<FileDto>> SendFilesByName(
+    Task<IEnumerable<long>> SendFilesByName(
         string name,
         long destinationChatId,
         long? directoryId = null,
         int? skip = null,
         int? take = null);
 
-    Task<IEnumerable<FileDto>> SendFilesByDescription(
+    Task<IEnumerable<long>> SendFilesByDescription(
         string description,
         long destinationChatId,
         long? directoryId = null,

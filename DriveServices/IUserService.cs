@@ -4,6 +4,6 @@ namespace DriveServices;
 
 public interface IUserService
 {
-    Task GetUserInfo(long userId);
-    Task SetUserInfo(UserInfoDto userInfo);
+    Task<UserInfoDto?> GetUserInfo(long userId);
+    Task<UserInfoDto> SetUserInfo(UserInfoDto userInfo);
 }
