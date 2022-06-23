@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DriveServices\DriveServices.csproj"/>
+    <ProjectReference Include="..\TgGateway\TgGateway.csproj"/>
+  </ItemGroup>
+
 </Project>
