@@ -101,7 +101,8 @@ public class UpdateParser : IUpdateHandler
             MessageId: msg.MessageId,
             Purpose: TgMessagePurpose.Message,
             SenderId: msg.From!.Id,
-            Type: (TgMessageType)msg.Type
+            Type: (TgMessageType)msg.Type,
+            Text: msg.Text
         ));
         var userState =
             await _storage.GetUserState(msg.Chat.Id, msg.From.Id);
@@ -135,7 +136,8 @@ public class UpdateParser : IUpdateHandler
                     DateTime: msg.Date,
                     SenderId: msg.From!.Id,
                     Type: (TgMessageType)msg.Type,
-                    Purpose: TgMessagePurpose.Unknown
+                    Purpose: TgMessagePurpose.Unknown,
+                    Text: msg.Text
                 )
             ));
         }
