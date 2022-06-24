@@ -120,10 +120,20 @@ public class DirectoryMenu : MenuBase
     [TgButtonCallback("back")]
     private async Task MenuBtn_GoBack(long chatId, IEnumerable<string> parameters)
     {
-        await _rootMenu.Open(chatId);
+        var parentId = long.Parse(parameters.First());
+        if (parentId == 0)
+        {
+            await _rootMenu.Open(chatId);
+        }
+        else
+        {
+            var parentDir = await _directoryService.GetDirectory(parentId);
+            await Open(chatId, parentId);
+        }
     }
 
     private TgKeyboard GetKeyboard(
+        DirectoryDto dir,
         IEnumerable<DirectoryDto> subdirs,
         IEnumerable<FileDto> files)
     {
@@ -143,7 +153,7 @@ public class DirectoryMenu : MenuBase
             buttons.Add(new TgMenuButton(file.Name, MenuBtn_OpenFile, file.Id));
         }
 
-        buttons.Add(new TgMenuButton("Back", MenuBtn_GoBack));
+        buttons.Add(new TgMenuButton("Back", MenuBtn_GoBack, dir.ParentId ?? 0));
         var keyboard = GetKeyboard(buttons);
         return keyboard;
     }
@@ -153,7 +163,7 @@ public class DirectoryMenu : MenuBase
         var dir = await _directoryService.GetDirectory(directoryId);
         var subdirs = await _directoryService.GetChildren(directoryId);
         var files = await _fileService.GetFiles(directoryId);
-        var keyboard = GetKeyboard(subdirs, files);
+        var keyboard = GetKeyboard(dir, subdirs, files);
         await _botClient.SendMenu(chatId, new MenuData(dir.Name, keyboard));
     }
 }
