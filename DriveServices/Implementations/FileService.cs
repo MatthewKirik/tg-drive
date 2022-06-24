@@ -24,6 +24,12 @@ public class FileService : IFileService
         return removed;
     }
 
+    public async Task<FileDto> GetFile(long fileId)
+    {
+        var file = await _fileRepository.GetFile(fileId);
+        return file;
+    }
+
     public async Task<IEnumerable<FileDto>> GetFiles(
         long? directoryId = null,
         int? skip = null,
