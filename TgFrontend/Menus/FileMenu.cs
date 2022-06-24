@@ -86,6 +86,6 @@ public class FileMenu : MenuBase
         var file = await _fileService.GetFile(fileId);
         var keyboard = GetKeyboard();
         await _botClient.SendMenu(chatId, new MenuData(file.Name, keyboard));
-        await _tgFileService.SendFile(file.Id, chatId);
+        await _tgFileService.SendFile(fileId);
     }
 }

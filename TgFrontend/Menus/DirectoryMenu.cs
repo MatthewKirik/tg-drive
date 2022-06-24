@@ -11,6 +11,7 @@ public class DirectoryMenu : MenuBase
 {
     private readonly IDirectoryService _directoryService;
     private readonly IFileService _fileService;
+    private readonly ITgFileService _tgFileService;
     private readonly FileMenu _fileMenu;
     private readonly RootMenu _rootMenu;
 
@@ -18,14 +19,60 @@ public class DirectoryMenu : MenuBase
         IBotClient botClient,
         IDirectoryService directoryService,
         IFileService fileService,
+        ITgFileService tgFileService,
         FileMenu fileMenu,
         RootMenu rootMenu)
         : base(botClient)
     {
         _directoryService = directoryService;
         _fileService = fileService;
+        _tgFileService = tgFileService;
         _fileMenu = fileMenu;
         _rootMenu = rootMenu;
+    }
+
+    [TgButtonCallback("ren")]
+    private async Task MenuBtn_AddFile(
+        long chatId,
+        IEnumerable<string> parameters)
+    {
+        await _botClient.SendText(chatId, "Send file to add");
+    }
+
+    [TgMessageResponse("ren")]
+    private async Task AddFile(
+        long chatId,
+        IEnumerable<string> parameters,
+        TgMessage message)
+    {
+        if (message.Text == null)
+        {
+            await _botClient.SendText(
+                chatId,
+                "Message text should contain file name on the first line.");
+            return;
+        }
+
+        var directoryId = long.Parse(parameters.First());
+        var parts = message.Text.Split('\n');
+        var name = parts.First();
+        var descParts = parts.Skip(1);
+        string? description = null;
+        if (descParts.Any())
+        {
+            description = String.Join('\n', descParts);
+        }
+
+        await _tgFileService.AddFile(new FileDto
+        {
+            ChatId = chatId,
+            AddedByUserId = chatId,
+            Description = description,
+            Name = name,
+            DirectoryId = directoryId,
+            MessageId = message.MessageId
+        });
+        await _botClient.SendText(chatId, "File added successfully!");
     }
 
     [TgButtonCallback("ren")]
@@ -141,7 +188,8 @@ public class DirectoryMenu : MenuBase
         {
             new("Rename", MenuBtn_RenameDirectory),
             new("Give access", MenuBtn_GiveAccess),
-            new("Add subdirectory", MenuBtn_AddSubdir)
+            new("Add subdirectory", MenuBtn_AddSubdir),
+            new("Add file", MenuBtn_AddFile)
         };
         foreach (var subdir in subdirs)
         {
