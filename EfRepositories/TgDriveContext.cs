@@ -36,5 +36,9 @@ public class TgDriveContext : DbContext
             .HasMany(x => x.Accesses)
             .WithOne(x => x.Directory)
             .HasForeignKey(x => x.DirectoryId);
+        modelBuilder
+            .Entity<DirectoryAccess>()
+            .HasKey(da => new {da.UserId, da.DirectoryId});
+            
     }
 }
