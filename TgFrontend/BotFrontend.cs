@@ -1,4 +1,5 @@
-﻿using TgFrontend.Menus;
+﻿using TgFrontend.Abstractions;
+using TgFrontend.Menus;
 using TgGateway.Abstractions;
 using TgGateway.Models.Updates;
 
@@ -9,10 +10,14 @@ public class BotFrontend : IUpdateHandler
     private readonly IBotClient _botClient;
     private readonly IEnumerable<MenuBase> _menus;
 
-    public BotFrontend(IBotClient botClient, DirectoryMenu directoryMenu)
+    public BotFrontend(
+        IBotClient botClient,
+        IRedirectHandler redirectHandler,
+        DirectoryMenu directoryMenu)
     {
         _botClient = botClient;
         _menus = new[] {directoryMenu};
+        redirectHandler.Initialize(_botClient, _menus);
     }
 
     public void Start()

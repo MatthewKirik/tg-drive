@@ -1,5 +1,6 @@
 ﻿using DataTransfer.Objects;
 using DriveServices;
+using TgFrontend.Abstractions;
 using TgFrontend.Models;
 using TgGateway.Abstractions;
 using TgGateway.Models;
@@ -12,23 +13,20 @@ public class DirectoryMenu : MenuBase
     private readonly IDirectoryService _directoryService;
     private readonly IFileService _fileService;
     private readonly ITgFileService _tgFileService;
-    private readonly FileMenu _fileMenu;
-    private readonly RootMenu _rootMenu;
+    private readonly IRedirectHandler _redirectHandler;
 
     public DirectoryMenu(
         IBotClient botClient,
         IDirectoryService directoryService,
         IFileService fileService,
         ITgFileService tgFileService,
-        FileMenu fileMenu,
-        RootMenu rootMenu)
+        IRedirectHandler redirectHandler)
         : base(botClient)
     {
         _directoryService = directoryService;
         _fileService = fileService;
         _tgFileService = tgFileService;
-        _fileMenu = fileMenu;
-        _rootMenu = rootMenu;
+        _redirectHandler = redirectHandler;
     }
 
     [TgButtonCallback("ren")]
@@ -161,7 +159,7 @@ public class DirectoryMenu : MenuBase
     private async Task MenuBtn_OpenFile(long chatId, IEnumerable<string> parameters)
     {
         var fileId = long.Parse(parameters.First());
-        await _fileMenu.Open(chatId, fileId);
+        await _redirectHandler.Redirect(chatId, typeof(FileMenu), fileId);
     }
 
     [TgButtonCallback("back")]
@@ -170,7 +168,7 @@ public class DirectoryMenu : MenuBase
         var parentId = long.Parse(parameters.First());
         if (parentId == 0)
         {
-            await _rootMenu.Open(chatId);
+            await _redirectHandler.Redirect(chatId, typeof(RootMenu));
         }
         else
         {

@@ -1,4 +1,5 @@
 ﻿using DriveServices;
+using TgFrontend.Abstractions;
 using TgFrontend.Models;
 using TgGateway.Abstractions;
 using TgGateway.Models;
@@ -10,20 +11,20 @@ public class FileMenu : MenuBase
     private readonly IDirectoryService _directoryService;
     private readonly IFileService _fileService;
     private readonly ITgFileService _tgFileService;
-    private readonly DirectoryMenu _directoryMenu;
+    private readonly IRedirectHandler _redirectHandler;
 
     public FileMenu(
         IDirectoryService directoryService,
         IFileService fileService,
         ITgFileService tgFileService,
-        DirectoryMenu directoryMenu,
+        IRedirectHandler redirectHandler,
         IBotClient botClient)
         : base(botClient)
     {
         _directoryService = directoryService;
         _fileService = fileService;
         _tgFileService = tgFileService;
-        _directoryMenu = directoryMenu;
+        _redirectHandler = redirectHandler;
     }
 
     [TgButtonCallback("cd")]
@@ -60,13 +61,13 @@ public class FileMenu : MenuBase
         var file = await _fileService.Remove(fileId);
         await _botClient.SendText(chatId, "Deleted successfully!");
     }
-    
+
     [TgButtonCallback("back")]
     private async Task MenuBtn_GoBack(long chatId, IEnumerable<string> parameters)
     {
         var fileId = long.Parse(parameters.First());
         var file = await _fileService.GetFile(fileId);
-        await _directoryMenu.Open(chatId, file.Id);
+        await _redirectHandler.Redirect(chatId, typeof(DirectoryMenu), file.DirectoryId);
     }
 
     private TgKeyboard GetKeyboard()

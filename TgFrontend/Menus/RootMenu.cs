@@ -1,5 +1,6 @@
 ﻿using DataTransfer.Objects;
 using DriveServices;
+using TgFrontend.Abstractions;
 using TgFrontend.Models;
 using TgGateway.Abstractions;
 using TgGateway.Models;
@@ -9,16 +10,16 @@ namespace TgFrontend.Menus;
 public class RootMenu : MenuBase
 {
     private readonly IDirectoryService _directoryService;
-    private readonly DirectoryMenu _directoryMenu;
+    private readonly IRedirectHandler _redirectHandler;
 
     public RootMenu(
         IBotClient botClient,
         IDirectoryService directoryService,
-        DirectoryMenu directoryMenu)
+        IRedirectHandler redirectHandler)
         : base(botClient)
     {
         _directoryService = directoryService;
-        _directoryMenu = directoryMenu;
+        _redirectHandler = redirectHandler;
     }
 
 
@@ -54,7 +55,7 @@ public class RootMenu : MenuBase
     private async Task MenuBtn_OpenSubdir(long chatId, IEnumerable<string> parameters)
     {
         var directoryId = long.Parse(parameters.First());
-        await _directoryMenu.Open(chatId, directoryId);
+        await _redirectHandler.Redirect(chatId, typeof(DirectoryMenu), directoryId);
     }
 
     private TgKeyboard GetKeyboard(IEnumerable<DirectoryDto> subdirs)
