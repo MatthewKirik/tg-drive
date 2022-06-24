@@ -1,20 +1,18 @@
 ﻿using AutoMapper;
+using EfRepositories.Mappings;
 
 namespace MappingConfig;
 
-public class AutMapperConfigurator
+public static class AutoMapperConfigurator
 {
-    public static class AutoMapperConfigurator
+    public static IMapper GetMapper()
     {
-        public static IMapper GetMapper()
+        var mapperConfig = new MapperConfiguration(mc =>
         {
-            var mapperConfig = new MapperConfiguration(mc =>
-            {
-                // Add mappings here like this:  mc.AddProfile(new MappingProfile());
-            });
+            mc.AddProfile(new EntityToDtoMappingProfile());
+        });
 
-            var mapper = mapperConfig.CreateMapper();
-            return mapper;
-        }
+        var mapper = mapperConfig.CreateMapper();
+        return mapper;
     }
 }
