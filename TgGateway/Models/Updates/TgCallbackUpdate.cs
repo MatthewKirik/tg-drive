@@ -6,5 +6,6 @@ public record TgCallbackUpdate(
         IEnumerable<string> Arguments,
         long SenderId,
         long ChatId,
-        DateTime DateTime)
-    : TgUpdate(SenderId, ChatId, DateTime);
+        DateTime DateTime,
+        Dictionary<string, string> State)
+    : TgUpdate(SenderId, ChatId, DateTime, State);

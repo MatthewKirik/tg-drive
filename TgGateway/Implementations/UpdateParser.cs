@@ -74,14 +74,17 @@ public class UpdateParser : IUpdateHandler
             return;
         }
 
-        await _updateHandler.HandleCallback(new TgCallbackUpdate
-        (
+        var userState =
+            await _storage.GetUserState(callback.Message!.Chat.Id, callback.From.Id);
+
+        await _updateHandler.HandleCallback(new TgCallbackUpdate(
             DateTime: DateTime.Now,
             MenuId: menuId,
             ButtonId: btnId,
             Arguments: args,
             ChatId: callback.Message!.Chat.Id,
-            SenderId: callback.From.Id
+            SenderId: callback.From.Id,
+            State: userState.values
         ));
     }
 
@@ -92,15 +95,17 @@ public class UpdateParser : IUpdateHandler
             return;
         }
 
-        await _storage.SaveMessage(new TgMessage
-        (
+        await _storage.SaveMessage(new TgMessage(
             ChatId: msg.Chat.Id,
             DateTime: msg.Date,
             MessageId: msg.MessageId,
             Purpose: TgMessagePurpose.Message,
             SenderId: msg.From!.Id,
-            Type: (TgMessageType)msg.Type
+            Type: (TgMessageType)msg.Type,
+            Text: msg.Text
         ));
+        var userState =
+            await _storage.GetUserState(msg.Chat.Id, msg.From.Id);
         if (msg.Text!.StartsWith("/"))
         {
             var command = new string(msg.Text.Skip(1)
@@ -110,29 +115,29 @@ public class UpdateParser : IUpdateHandler
                 return;
             }
 
-            await _updateHandler.HandleCommand(new TgCommandUpdate
-            (
+            await _updateHandler.HandleCommand(new TgCommandUpdate(
                 ChatId: msg.Chat.Id,
                 DateTime: msg.Date,
                 Command: command,
-                SenderId: msg.From.Id
+                SenderId: msg.From.Id,
+                State: userState.values
             ));
         }
         else
         {
-            await _updateHandler.HandleMessage(new TgMessageUpdate
-            (
+            await _updateHandler.HandleMessage(new TgMessageUpdate(
                 ChatId: msg.Chat.Id,
                 SenderId: msg.From.Id,
                 DateTime: msg.Date,
-                Message: new TgMessage
-                (
+                State: userState.values,
+                Message: new TgMessage(
                     ChatId: msg.Chat.Id,
                     MessageId: msg.MessageId,
                     DateTime: msg.Date,
                     SenderId: msg.From!.Id,
                     Type: (TgMessageType)msg.Type,
-                    Purpose: TgMessagePurpose.Unknown
+                    Purpose: TgMessagePurpose.Unknown,
+                    Text: msg.Text
                 )
             ));
         }

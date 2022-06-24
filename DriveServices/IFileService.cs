@@ -6,6 +6,7 @@ public interface IFileService
 {
     Task<FileDto> ChangeDescription(long fileId, string newDescription);
     Task<FileDto> Remove(long fileId);
+    Task<FileDto> GetFile(long fileId);
 
     Task<IEnumerable<FileDto>> GetFiles(
         long? directoryId = null,
