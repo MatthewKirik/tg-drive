@@ -6,5 +6,6 @@ public record TgMessage(
     long MessageId,
     DateTime DateTime,
     TgMessageType Type,
-    TgMessagePurpose Purpose
+    TgMessagePurpose Purpose,
+    string? Text
 );

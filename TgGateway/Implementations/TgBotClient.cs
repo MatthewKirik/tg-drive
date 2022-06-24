@@ -53,7 +53,7 @@ public class TgBotClient : IBotClient
                 chatId,
                 existingMenuMsg.MessageId,
                 data.Text,
-                data.Keyboard);
+                MapKeyboard(data.Keyboard));
             if (!edited)
             {
                 await TryDeleteMessage(chatId, existingMenuMsg.MessageId);
@@ -71,32 +71,49 @@ public class TgBotClient : IBotClient
             chatId,
             data.Text,
             ParseMode.Html,
-            replyMarkup: data.Keyboard);
-        await _storage.SaveMessage(new TgMessage
-        (
+            replyMarkup: MapKeyboard(data.Keyboard));
+        await _storage.SaveMessage(new TgMessage(
             ChatId: chatId,
             DateTime: sentMenuMsg.Date,
             MessageId: sentMenuMsg.MessageId,
             Purpose: TgMessagePurpose.Menu,
             SenderId: sentMenuMsg.From!.Id,
-            Type: (TgMessageType)sentMenuMsg.Type
+            Type: (TgMessageType)sentMenuMsg.Type,
+            Text: data.Text
         ));
         return sentMenuMsg.MessageId;
+    }
+
+    private static InlineKeyboardMarkup MapKeyboard(TgKeyboard keyboardDto)
+    {
+        var keys = new List<List<InlineKeyboardButton>>();
+        foreach (var rowDto in keyboardDto.Rows)
+        {
+            var row = rowDto
+                .Select(btn =>
+                    InlineKeyboardButton.WithCallbackData(btn.Text, btn.Callback))
+                .ToList();
+            keys.Add(row);
+        }
+
+        var keyboard = new InlineKeyboardMarkup(keys);
+        return keyboard;
     }
 
     public async Task<long> SendText(long chatId, string text, long? replyToMsgId = null)
     {
         var message =
-            await _tgBotClient.SendTextMessageAsync(new ChatId(chatId), text,
+            await _tgBotClient.SendTextMessageAsync(new ChatId(chatId),
+                text,
                 ParseMode.Html);
-        await _storage.SaveMessage(new TgMessage
-        (
+        await _storage.SaveMessage(new TgMessage(
             ChatId: chatId,
             DateTime: message.Date,
             MessageId: message.MessageId,
             Purpose: TgMessagePurpose.Message,
             SenderId: message.From!.Id,
-            Type: (TgMessageType)message.Type
+            Type: (TgMessageType)message.Type,
+            Text: text
         ));
         return message.MessageId;
     }
@@ -111,6 +128,13 @@ public class TgBotClient : IBotClient
             new ChatId(fromChat),
             (int)messageId);
         return message.MessageId;
+    }
+
+    public async Task SetState(long chatId, long userId, Dictionary<string, string> state)
+    {
+        await _storage.SetUserState(chatId,
+            userId,
+            new TgUserState(chatId, userId, state));
     }
 
     public async IAsyncEnumerable<long> ForwardMessagesUnmanaged(

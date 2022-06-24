@@ -3,5 +3,6 @@
 public abstract record TgUpdate(
     long SenderId,
     long ChatId,
-    DateTime DateTime
+    DateTime DateTime,
+    Dictionary<string, string> State
 );
