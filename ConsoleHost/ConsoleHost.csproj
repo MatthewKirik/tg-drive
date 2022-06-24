@@ -7,4 +7,24 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0"/>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1"/>
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.1"/>
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql.Design" Version="1.1.2"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DriveServices\DriveServices.csproj"/>
+    <ProjectReference Include="..\EfRepositories\EfRepositories.csproj"/>
+    <ProjectReference Include="..\MappingConfig\MappingConfig.csproj"/>
+    <ProjectReference Include="..\MySqlMigrations\MySqlMigrations.csproj"/>
+    <ProjectReference Include="..\TgChatsStorage\TgChatsStorage.csproj"/>
+    <ProjectReference Include="..\TgFrontend\TgFrontend.csproj"/>
+  </ItemGroup>
+
 </Project>
