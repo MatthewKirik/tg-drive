@@ -9,17 +9,20 @@ public class FileMenu : MenuBase
 {
     private readonly IDirectoryService _directoryService;
     private readonly IFileService _fileService;
+    private readonly ITgFileService _tgFileService;
     private readonly DirectoryMenu _directoryMenu;
 
     public FileMenu(
         IDirectoryService directoryService,
         IFileService fileService,
+        ITgFileService tgFileService,
         DirectoryMenu directoryMenu,
         IBotClient botClient)
         : base(botClient)
     {
         _directoryService = directoryService;
         _fileService = fileService;
+        _tgFileService = tgFileService;
         _directoryMenu = directoryMenu;
     }
 
@@ -83,6 +86,6 @@ public class FileMenu : MenuBase
         var file = await _fileService.GetFile(fileId);
         var keyboard = GetKeyboard();
         await _botClient.SendMenu(chatId, new MenuData(file.Name, keyboard));
-        await _botClient.CopyMessageUnmanaged(file.ChatId, chatId, file.MessageId);
+        await _tgFileService.SendFile(file.Id, chatId);
     }
 }
