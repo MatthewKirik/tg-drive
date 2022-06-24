@@ -39,6 +39,5 @@ public class TgDriveContext : DbContext
         modelBuilder
             .Entity<DirectoryAccess>()
             .HasKey(da => new {da.UserId, da.DirectoryId});
-            
     }
 }
