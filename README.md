@@ -34,7 +34,9 @@ To run the bot hosting you need to setup these enviroment variables:
 How to set these variables you can read in folowing manuals:
 
 https://www.litedb.org/docs/getting-started/
+
 https://core.telegram.org/
+
 https://dev.mysql.com/doc/mysql-getting-started/en/
 
 Next you go forward into ConsoleHost directory and then run the hosting with following command:
