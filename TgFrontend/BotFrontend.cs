@@ -8,15 +8,20 @@ namespace TgFrontend;
 public class BotFrontend : IUpdateHandler
 {
     private readonly IBotClient _botClient;
+    private readonly RootMenu _rootMenu;
     private readonly IEnumerable<MenuBase> _menus;
 
     public BotFrontend(
         IBotClient botClient,
         IRedirectHandler redirectHandler,
-        DirectoryMenu directoryMenu)
+        RootMenu rootMenu,
+        DirectoryMenu directoryMenu,
+        FileMenu fileMenu
+    )
     {
         _botClient = botClient;
-        _menus = new[] {directoryMenu};
+        _rootMenu = rootMenu;
+        _menus = new MenuBase[] {directoryMenu, rootMenu, directoryMenu};
         redirectHandler.Initialize(_botClient, _menus);
     }
 
@@ -58,7 +63,7 @@ public class BotFrontend : IUpdateHandler
         switch (update.Command)
         {
             case "start":
-                // await RootMenu.Open(chatId);
+                await _rootMenu.Open(update.ChatId);
                 break;
             default: return;
         }
